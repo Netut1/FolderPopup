@@ -1,6 +1,6 @@
 ; ===== Настройки =====
 #define AppName "Folder Popup"
-#define AppVer  "1.0.0"
+#define AppVer  "1.0.3"
 #define AppExe  "FolderPopup.exe"
 ; Ссылка на публичный репозиторий без слеша в конце, например https://github.com/ник/репозиторий
 #define Repo    "https://github.com/Netut1/FolderPopup"
@@ -11,7 +11,7 @@
 
 ; Разрядность: по умолчанию x64. Для x86 передай /DArch=x86
 #ifndef Arch
-  #define Arch "x86"
+  #define Arch "x64"
 #endif
 
 ; SHA-256 скачиваемого exe (необязательно). Пусто = без проверки. Передавай так: /DSha256=...
@@ -46,6 +46,7 @@ OutputDir=Output
 OutputBaseFilename=FolderPopup-Setup-{#AppVer}-{#Arch}
 Compression=lzma2
 SolidCompression=yes
+SetupIconFile=C:\Users\rdani\source\repos\FolderPopup\FolderPopup\app.ico
 WizardStyle=modern
 UninstallDisplayIcon={app}\{#AppExe}
 #if Arch == "x64"
