@@ -4,8 +4,11 @@ namespace FolderPopup;
 
 public static class ShortcutHelper
 {
-    [DllImport("shell32.dll")]
-    static extern void SHChangeNotify(int eventId, int flags, IntPtr a, IntPtr b);
+    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+    static extern void SHChangeNotify(int eventId, uint flags, string path, IntPtr item2);
+
+    // Сообщаем Проводнику об изменении только этого ярлыка (SHCNE_UPDATEITEM, SHCNF_PATHW)
+    static void UpdateItem(string path) => SHChangeNotify(0x00002000, 0x0005, path, IntPtr.Zero);
 
     static string LnkPath(string folder) => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
@@ -15,11 +18,13 @@ public static class ShortcutHelper
 
     public static void Create(string folder, string icoPath)
     {
-        var s = Shell().CreateShortcut(LnkPath(folder));
+        var lnk = LnkPath(folder);
+        var s = Shell().CreateShortcut(lnk);
         s.TargetPath = Environment.ProcessPath;
         s.Arguments = $"--open \"{folder}\"";
         s.IconLocation = icoPath + ",0";
         s.Save();
+        UpdateItem(lnk);
         IconBuilder.Cleanup(icoPath);   // старые иконки этой папки больше не нужны
     }
 
@@ -32,9 +37,9 @@ public static class ShortcutHelper
         string cur = Shell().CreateShortcut(lnk).IconLocation;
         if (cur.StartsWith(ico, StringComparison.OrdinalIgnoreCase)) return;
         Create(folder, ico);
-        Notify();
     }
 
+    // Удаляет ярлык и иконки этой папки; сами файлы в папке не трогает
     public static void Delete(string folder)
     {
         try
@@ -43,7 +48,8 @@ public static class ShortcutHelper
             if (File.Exists(lnk))
             {
                 string args = Shell().CreateShortcut(lnk).Arguments;
-                if (args.StartsWith("--open")) File.Delete(lnk);
+                if (args.StartsWith("--open"))   // удаляем только наш ярлык
+                    File.Delete(lnk);
             }
             var icons = IconBuilder.IconDir(folder);
             if (Directory.Exists(icons)) Directory.Delete(icons, true);
@@ -51,5 +57,6 @@ public static class ShortcutHelper
         catch { }
     }
 
-    public static void Notify() => SHChangeNotify(0x08000000, 0, IntPtr.Zero, IntPtr.Zero);
+    // Оставлено для совместимости: глобальное обновление всех иконок больше не вызываем
+    public static void Notify() { }
 }
