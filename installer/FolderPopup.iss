@@ -1,6 +1,6 @@
 ; ===== Настройки =====
 #define AppName "Folder Popup"
-#define AppVer  "1.0.4"
+#define AppVer  "1.0.5"
 #define AppExe  "FolderPopup.exe"
 ; Ссылка на публичный репозиторий без слеша в конце, например https://github.com/ник/репозиторий
 #define Repo    "https://github.com/Netut1/FolderPopup"
